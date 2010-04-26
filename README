@@ -1,0 +1,10 @@
+A collection of scripts and patches to utilities, and a small list of lessons learned.
+
+
+*** Lessons learned: ***
+
+After doing a filesystem online resize, fix superblock backup by running e2label /dev/XXX "`e2label /dev/XXX`"
+
+HP DL160 G6 (without HW RAID) -- Change SATA controller settings to AHCI (in BIOS), otherwise disk performance sucks badly.
+
+Nagios check_disk, always use -X none (excludes bind mounts) and -e (only lists partitions that actually have issues).
