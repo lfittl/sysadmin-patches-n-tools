@@ -1,0 +1,39 @@
+--- check_procs.c.orig	2010-04-22 15:29:24.000000000 +0200
++++ check_procs.c	2010-04-22 15:08:29.000000000 +0200
+@@ -203,6 +203,9 @@
+ 
+ 			/* Ignore self */
+ 			if (mypid == procpid) continue;
++			
++			/* Ignore child containers if we're on an OpenVZ hardware node */
++			if (read_openvz_id(1) == 0 && read_openvz_id(procpid) != 0) continue;
+ 
+ 			if ((options & STAT) && (strstr (statopts, procstat)))
+ 				resultsum |= STAT;
+@@ -666,6 +669,26 @@
+ 	return total;
+ }
+ 
++/* Returns the OpenVZ enviroment ID of the specified process, or -1 if we're not on OpenVZ */
++int
++read_openvz_id(int procid) {
++	FILE *file;
++	char *filename = strdup("");
++	char line[64];
++	int result = -1;
++	
++	asprintf(&filename, "/proc/%d/status", procid);
++	
++	if ((file = fopen(filename, "r")) == NULL) return -1;
++	
++	while (fgets(line, sizeof(line), file) != NULL) {
++		sscanf(line, "envID:\t%d", &result);
++	}
++	
++	fclose(file);
++	return result;
++}
++
+ 
+ void
+ print_help (void)
